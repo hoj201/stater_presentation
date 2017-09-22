@@ -100,8 +100,8 @@ We have impressive hardware, but it's not magic
 
 ### The lift plugin
 
-- The plugin assumes that we know the direction of gravity at the present moment $$g_cur$$,
-  as well as what the gravity would be when you are standing upright $$g_{ref}$$
+- The plugin assumes that we know the direction of gravity at the present moment $g_{cur}$,
+  as well as what the gravity would be when you are standing upright $g_{ref}$
   (this is obtained via other plugins).
 
 - We define the sagittal angle:
@@ -125,7 +125,7 @@ $$\theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)$$
  1. If a squat is predicted, the device will not buzz, and we apply the `squat` label.
  2. If $\theta$ is ridic (i.e. > 75 degrees) we will not buzz, no label is applied.
  3. We estimate the back angle using the sagittal angle via a linear equation.
- 4. If the estimated back angle is beyond 72 degrees (corresponds to $$\theta = 36$$) we label the window as a `bend`.
+ 4. If the estimated back angle is beyond 72 degrees (corresponds to $\theta = 36$) we label the window as a `bend`.
  5. If the back angle is between 31 and 36, then features are used to predict a twist.
  6. If a twist is detected, we label the window `twist` and the device will buzz.
 
