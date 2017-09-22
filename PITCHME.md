@@ -3,7 +3,6 @@
 ## Contents
 - what is the point of this talk?
 - what is the challenge?
-- intro to machine learning
 - what is stater?
 
 ---
@@ -84,27 +83,12 @@ We have impressive hardware, but it's not magic
 
  ---
 
- ### Challenge 3: Our sensors are not perfect
+### Challenge 3: Our sensors are not perfect
   - Impact: we must filter.
   - Impact: we can't extract position / velocity from acceleration (draw this)
 
 ---
-
- ## Machine learning crash course
- Example: linear regression.
- You have labelled data $$\{(x1,y1), (x2,y2), ...\}$$.  We'd like to find a map which takes $$x \to y$$ which is "consistent" with the data.
-
----
-
- ### Cross validation
-  - split the data into a training and a testing set
-  - fit a function to the training set
-  - test your function on the test set
-
- Do this over and over until you get a function you like.
-
----
- ## Stater
+## Stater
  The input to stater is an i2c data stream.  The stream is fed into plugins:
 
  - lift (detects risky lifts)
@@ -113,23 +97,22 @@ We have impressive hardware, but it's not magic
  - walk detection
 
 ---
- ### The lift plugin
 
-  The plugin assumes that we know the direction of gravity at the present moment $$g_cur$$,
+### The lift plugin
+
+- The plugin assumes that we know the direction of gravity at the present moment $$g_cur$$,
   as well as what the gravity would be when you are standing upright $$g_{ref}$$
   (this is obtained via other plugins).
 
-  We define the sagittal angle
-  $$
-  \theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)
-  $$
+- We define the sagittal angle:
+$$\theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)$$
 
 ---
- #### window generation
+#### window generation
   we wait for $theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
 
 ---
- ### window processing
+### window processing
   We extract a bunch of features like:
    - max saggittal angle during window
    - max twist during the window
@@ -147,18 +130,19 @@ We have impressive hardware, but it's not magic
  6. If a twist is detected, we label the window `twist` and the device will buzz.
 
 ---
- ### Calibration
+
+### Calibration
  If the device is put on correctly, then the `kyu` plugin does the work... math.
 
- $$ s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
+ $$s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
 
- $$ g_cal = s / |s|$$
+ $$g_cal = s / |s|$$
 
  Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
 
 ---
 
- ### Walk plugin
+### Walk plugin
  Processes on 6 second windows.  Computes the ACF function. then does a vanilla NN on top, every second.
 
  $$ acf[f] := \sum_k x[k]x[k+i]$$
