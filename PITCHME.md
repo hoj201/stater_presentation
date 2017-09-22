@@ -127,7 +127,7 @@ $$\theta := \arccos( g_r \cdot g_c )\, {\rm sign}( g_c \cdot e_y )$$
 
 ---
 #### window generation
-  we wait for $theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
+  we wait for $\theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
 
 ---
 ### window processing
@@ -182,22 +182,24 @@ $$\theta := \arccos( g_r \cdot g_c )\, {\rm sign}( g_c \cdot e_y )$$
 
 ---
 
-### Calibration
- If the device is put on correctly, then the `kyu` plugin does the work... math.
+### Initial Calibration (the kyu plugin)
+ If the device is put on correctly, then the `kyu` plugin does the work.
 
  $$s = \sum_{t=1}^N \frac{1}{\sigma_t + \epsilon} g_t$$
 
  $$g_c = s / |s|$$
 
- Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
+---
+### Recalibration
+ Throughout the day the following is computed
 
- $$s \sum_{t=1}^N \max(\Pr(walk)-0.8) g_i$$
+ $$s = \sum_{t=1}^N \max(\Pr(walk)-0.8) g_i$$
 
  Where $\Pr(walk)$ is determined by the walk plugin.
 
 ---
 
-### Walk plugin
+### Walk detection
  Processes on 6 second windows.  Computes the ACF function. then does a vanilla NN on top, every second.
 
  $$ acf[f] := \sum_k x[k]x[k+i]$$
