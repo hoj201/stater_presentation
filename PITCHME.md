@@ -100,7 +100,7 @@ We have impressive hardware, but it's not magic
 
 ### The lift plugin
 
-- The plugin assumes that we know the direction of gravity at the present moment $g_{cur}$,
+- The plugin assumes that we know the direction of gravity at the present moment $g_{cur}$ .
   as well as what the gravity would be when you are standing upright $g_{ref}$
   (this is obtained via other plugins).
 
