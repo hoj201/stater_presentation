@@ -100,12 +100,12 @@ We have impressive hardware, but it's not magic
 
 ### The lift plugin
 
-- The plugin assumes that we know the direction of gravity at the present moment $g_{cur}$ .
-  as well as what the gravity would be when you are standing upright $g_{ref}$
+- The plugin assumes that we know the direction of gravity at the present moment $g_c$ .
+  as well as what the gravity would be when you are standing upright $g_r$
   (this is obtained via other plugins).
 
 - We define the sagittal angle:
-$$\theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)$$
+$$\theta := \arccos( g_r \cdot g_c ) \sign(g_c[2])$$
 
 ---
 #### window generation
