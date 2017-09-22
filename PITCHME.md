@@ -84,7 +84,8 @@ We have impressive hardware, but it's not magic
 ### Challenge 3: Our sensors are not perfect
   - Impact: we must filter.
   - Impact: we can't extract position / velocity from acceleration (draw this)
- +++
+
++++
 
 Imagine the device is sitting flat on a table
 <img src="white_noise.png" height="300">
