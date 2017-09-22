@@ -55,17 +55,103 @@ $$
 
 ### Challenge 1: Sensor readings are many to one
 
-*Example (1,2,3,4,5).  The real labels are determined by the function (x<4), the sensor just tells us if the number is even/odd.*
+*Example:*
+- Universe=(1,2,3,4,5).
+- labels are determined by the function (x<4).
+- Sensor just tells us if a number is even/odd.
 
-- Relevant example: Things that are not risky lifts can produce i2c streams that are identical to those of risky lifts.
+---
+
+### Challenge 1: Sensor readings are many to one
+
+*Relevant example:*
+- Universe=(all uses of the device)
+- labels = {risky lift, safe lift}
+- sensor = offset of the x-axis from gravity and the sign of the y-component of gravity.
+
+Lifting your leg behind you produces the same signal as a risky lift.
 
 ---
 
 ### Challenge 2: Computational power is finite
 We have impressive hardware, but it's not magic
-<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg">
+<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg" with="200">
 
  - Too much math drains the battery and we only have 40ms to process each point.
  - Too many log messages drains the battery.
  - Impact: Neural nets can't be too deep.
  - Impact: Features must be computable.
+
+ ---
+
+ ### Challenge 3: Our sensors are not perfect
+  - Impact: we must filter.
+  - Impact: we can't extract position / velocity from acceleration (draw this)
+
+---
+
+ ## Machine learning crash course
+ Example: linear regression.
+ You have labelled data {(x1,y1), (x2,y2), ...}.  We'd like to find a map which takes xs->ys which is "consistent" with the data.
+
+---
+
+ ### Cross validation
+  - split the data into a training and a testing set
+  - fit a function to the training set
+  - test your function on the test set
+
+ Do this over and over until you get a function you like.
+
+---
+ ## Stater
+ The input to stater is an i2c data stream.  The stream is fed into plugins:
+
+ - lift (detects risky lifts)
+ - kyu (initial calibration)
+ - recalibration
+ - walk detection
+
+ ### The lift plugin
+
+  The plugin assumes that we know the direction of gravity at the present moment $g_cur$,
+  as well as what the gravity would be when you are standing upright $g_{ref}$ (this is obtained via other plugins).
+
+  We define the sagittal angle
+  $$
+  \theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)
+  $$
+
+ #### window generation
+  we wait for $theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
+
+ ### window processing
+  We extract a bunch of features like:
+   - max saggittal angle during window
+   - max twist during the window
+   - change in height during the window
+   - ...
+
+ Then we predict if a squat occured using the height change.
+ If a squat is predicted, the device will not buzz.
+
+ Also, if the sagittal angle is ridic (i.e. > 75 degrees) we will not buzz.
+
+ Then we estimate the back angle using the sagittal angle via a linear equation and buzz if the estimated back angle is beyond 72 degrees. With respect to sagittal angle, this means if the sagittal angle is above 36, the device will detect a risky bend, and buzz.
+
+ If the back angle is between 31 and 36, then the features are used to predict a twist, and if a twist is detected the device will buzz.
+
+ ### Calibration
+ If the device is put on correctly, then the kyu plugin does the work... math.
+
+ $$ s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
+
+ $$ g_cal = s / |s|$
+
+ Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
+
+
+ ### Walk plugin
+ Processes on 6 second windows.  Computes the ACF function. then does a vanilla NN on top, every second.
+
+ $$ acf[f] := \sum_k x[k]x[k+i]$$
