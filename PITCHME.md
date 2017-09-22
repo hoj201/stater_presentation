@@ -92,7 +92,7 @@ We have impressive hardware, but it's not magic
 
  ## Machine learning crash course
  Example: linear regression.
- You have labelled data {(x1,y1), (x2,y2), ...}.  We'd like to find a map which takes xs->ys which is "consistent" with the data.
+ You have labelled data $$\{(x1,y1), (x2,y2), ...\}$$.  We'd like to find a map which takes $$x \to y$$ which is "consistent" with the data.
 
 ---
 
