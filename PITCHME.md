@@ -173,12 +173,17 @@ $$\theta := \arccos( g_r \cdot g_c )\, {\rm sign}( g_c \cdot e_y )$$
 ---
 
 ### To buzz or not to buzz
- 1. If a squat is predicted, the device will not buzz, and we apply the `squat` label.
- 2. If $\theta$ is ridic (i.e. > 75 degrees) we will not buzz, no label is applied.
- 3. We estimate the back angle using the sagittal angle via a linear equation.
- 4. If the estimated back angle is beyond 72 degrees (corresponds to $\theta = 36$) we label the window as a `bend`.
- 5. If the back angle is between 31 and 36, then features are used to predict a twist.
- 6. If a twist is detected, we label the window `twist` and the device will buzz.
+ 1. squat predicted -> label=`squat` -> no buzz.
+ 2. $\theta > 75^\circ$ -> label=`none` -> no buzz.
+ 3. We estimate the back-angle, $\phi$ = 0.82\theta+41.9$.
+
++++
+
+### To buzz or not to buzz
+
+ 4. $\phi > 72^\circ$ (corresponds  $\theta > 36^\circ$) -> label=`bend` -> buzz.
+ 5. If $\theta \in [31,36]$ then we compute a twist prediction.
+ 6. twist detected -> label=`twist` -> buzz.
 
 ---
 
