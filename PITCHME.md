@@ -87,20 +87,20 @@ We have impressive hardware, but it's not magic
  +++
 
 Imagine the device is sitting flat on a table
-![white noise](white_noise.png)
+![white noise](white_noise.png){height="300px"}
 
 $e \sim O(\sigma)$
 
 +++
 
 This is our estimate of the velocity of the device
-![brownian motion](brownian_motion.png)
+![brownian motion](brownian_motion.png){height="300px"}
 
 $drift \propto t \sigma $
 
 +++
 
-![position](double_integral.png)
+![position](double_integral.png){height="300px"}
 
 $drift \propto O(\sigma^2 t^2)$
 
