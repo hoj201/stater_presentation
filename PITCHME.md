@@ -112,19 +112,23 @@ We have impressive hardware, but it's not magic
  - recalibration
  - walk detection
 
+---
  ### The lift plugin
 
-  The plugin assumes that we know the direction of gravity at the present moment $g_cur$,
-  as well as what the gravity would be when you are standing upright $g_{ref}$ (this is obtained via other plugins).
+  The plugin assumes that we know the direction of gravity at the present moment $$g_cur$$,
+  as well as what the gravity would be when you are standing upright $$g_{ref}$$
+  (this is obtained via other plugins).
 
   We define the sagittal angle
   $$
   \theta := \arccos( g_{ref} \cdot g_{cur} ) \sign(g_y)
   $$
 
+---
  #### window generation
   we wait for $theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
 
+---
  ### window processing
   We extract a bunch of features like:
    - max saggittal angle during window
@@ -132,24 +136,27 @@ We have impressive hardware, but it's not magic
    - change in height during the window
    - ...
 
- Then we predict if a squat occured using the height change.
- If a squat is predicted, the device will not buzz.
+---
 
- Also, if the sagittal angle is ridic (i.e. > 75 degrees) we will not buzz.
+### To buzz or not to buzz
+ 1. If a squat is predicted, the device will not buzz, and we apply the `squat` label.
+ 2. If $\theta$ is ridic (i.e. > 75 degrees) we will not buzz, no label is applied.
+ 3. We estimate the back angle using the sagittal angle via a linear equation.
+ 4. If the estimated back angle is beyond 72 degrees (corresponds to $$\theta = 36$$) we label the window as a `bend`.
+ 5. If the back angle is between 31 and 36, then features are used to predict a twist.
+ 6. If a twist is detected, we label the window `twist` and the device will buzz.
 
- Then we estimate the back angle using the sagittal angle via a linear equation and buzz if the estimated back angle is beyond 72 degrees. With respect to sagittal angle, this means if the sagittal angle is above 36, the device will detect a risky bend, and buzz.
-
- If the back angle is between 31 and 36, then the features are used to predict a twist, and if a twist is detected the device will buzz.
-
+---
  ### Calibration
- If the device is put on correctly, then the kyu plugin does the work... math.
+ If the device is put on correctly, then the `kyu` plugin does the work... math.
 
  $$ s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
 
- $$ g_cal = s / |s|$
+ $$ g_cal = s / |s|$$
 
  Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
 
+---
 
  ### Walk plugin
  Processes on 6 second windows.  Computes the ACF function. then does a vanilla NN on top, every second.
