@@ -67,21 +67,42 @@ $$
 Lifting your leg behind you produces the same signal as a risky lift.
 
 ---
-
 ### Challenge 2: Computational power is finite
 We have impressive hardware, but it's not magic
-<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg" height="200">
+<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg" height="300">
 
  - Too much math drains the battery and we only have 40ms to process each point.
  - Too many log messages drains the battery.
- - Impact: Neural nets can't be too deep.
- - Impact: Features must be computable.
 
- ---
+---
+#### Impacts
+<img src="https://i.imgflip.com/1m624y.jpg" height="300">
+ - Neural nets can't be too deep.
+ - Features must be real-time computable.
 
+---
 ### Challenge 3: Our sensors are not perfect
   - Impact: we must filter.
   - Impact: we can't extract position / velocity from acceleration (draw this)
+ +++
+
+Imagine the device is sitting flat on a table
+![white noise](white_noise.png)
+
+$e \sim O(\sigma)$
+
++++
+
+This is our estimate of the velocity of the device
+![brownian motion](brownian_motion.png)
+
+$drift \propto t \sigma $
+
++++
+
+![position](double_integral.png)
+
+$drift \propto O(\sigma^2 t^2)$
 
 ---
 ## Stater
