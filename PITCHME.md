@@ -1,5 +1,3 @@
----
-
 ## Contents
 - what is the point of this talk?
 - what is the challenge?
@@ -8,7 +6,6 @@
 ---
 
 ## What is the point of this talk?
-
 By the end of this talk you should:
   - understand what decides when the device will buzz.
   - understand what can be addressed.
@@ -20,7 +17,6 @@ Important, because you only have one machine learning engineer at the moment.
 ---
 
 ## What is the challenge?
-
 The input looks like this
 ```json
 {"side":{"accelerometer":{"x":-0.9215088,"y":0.010009766,"z":0.019165039},"quaternion":{"w":-0.36803147,"x":0.5970288,"y":-0.347097,"z":-0.6226018},"gyro":{"x":-1.7089844,"y":-0.24414062,"z":0.24414062},"temperature":36,"altitude":-2961,"button":0},"time":1495047945627}
@@ -66,7 +62,7 @@ $$
 *Relevant example:*
 - Universe=(all uses of the device)
 - labels = {risky lift, safe lift}
-- sensor = offset of the x-axis from gravity and the sign of the y-component of gravity.
+- sensor = offset of the x-axis from gravity.
 
 Lifting your leg behind you produces the same signal as a risky lift.
 
@@ -104,8 +100,8 @@ We have impressive hardware, but it's not magic
   as well as what the gravity would be when you are standing upright $g_r$
   (this is obtained via other plugins).
 
-- We define the sagittal angle:
-$$\theta := \arccos( g_r \cdot g_c ) {\rm sign}( g_c \cdot e_y )$$
+- We define the angle:
+$$\theta := \arccos( g_r \cdot g_c )\, {\rm sign}( g_c \cdot e_y )$$
 
 ---
 #### window generation
@@ -114,10 +110,43 @@ $$\theta := \arccos( g_r \cdot g_c ) {\rm sign}( g_c \cdot e_y )$$
 ---
 ### window processing
   We extract a bunch of features like:
-   - max saggittal angle during window
-   - max twist during the window
-   - change in height during the window
-   - ...
+   ```go
+  FEATURE_DURATION              = "duration"
+	FEATURE_TIME                  = "time"
+	FEATURE_MAX_SAGITTAL          = "maxSag"
+	FEATURE_MIN_SAGITTAL          = "minSag"
+	FEATURE_FIRST_SAGITTAL        = "firstSag"
+	FEATURE_LAST_SAGITTAL         = "lastSag"
+	FEATURE_AVG_SAG_VELOCITY      = "sagAvgVelocity"
+	FEATURE_PEAK_GRAVITY_Y        = "peakGravY"
+	FEATURE_INTQ_GRAV_Z           = "intqGravZ"
+	FEATURE_INTQ_GRAV_Y           = "intqGravY"
+	FEATURE_RANGE_GRAV_Z          = "rangeGravZ"
+	FEATURE_RANGE_GRAV_Y          = "rangeGravY"
+	FEATURE_MAX_HEIGHT            = "maxHeight"
+	FEATURE_MEAN_SAG              = "meanSag"
+	FEATURE_STD_SAG               = "stdSag"
+	FEATURE_MIN_HEIGHT            = "minHeight"
+	FEATURE_RANGE_HEIGHT          = "rangeHeight"
+	FEATURE_TWIST_PLUS            = "twistPlus"
+	FEATURE_TWIST_MINUS           = "twistMinus"
+	FEATURE_TWIST_MIN             = "twistMin"
+	FEATURE_TWIST_MAX             = "twistMax"
+	FEATURE_TWIST_RANGE           = "twistRange"
+	FEATURE_TWIST_AVG_VELOCITY    = "twistAvgVelocity"
+	FEATURE_TWIST_AT_PEAK         = "twistAtPeak"
+	FEATURE_TWIST_TIME_TO_MIN     = "twistTimeToMin"
+	FEATURE_TWIST_TIME_TO_MAX     = "twistTimeToMax"
+	FEATURE_TWIST_BOX_POSITION    = "twistBoxPosition"
+	FEATURE_TWIST_PREDICTION      = "twistPrediction"
+	FEATURE_TWIST_ROTATION_AMOUNT = "twistRotationAmount"
+	FEATURE_NEED_CALIBRATION      = "needCalibration"
+	FEATURE_SQUAT_0               = "featuresSquat0"
+	FEATURE_SQUAT_1               = "featuresSquat1"
+	FEATURE_SQUAT_2               = "featuresSquat2"
+	FEATURE_SQUAT_3               = "featuresSquat3"
+	FEATURE_SQUAT_4               = "featuresSquat4"
+   ```
 
 ---
 
@@ -134,11 +163,15 @@ $$\theta := \arccos( g_r \cdot g_c ) {\rm sign}( g_c \cdot e_y )$$
 ### Calibration
  If the device is put on correctly, then the `kyu` plugin does the work... math.
 
- $$s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
+ $$s = \sum_{t=1}^N \frac{1}{\sigma_t + \epsilon} g_t$$
 
- $$g_cal = s / |s|$$
+ $$g_c = s / |s|$$
 
  Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
+
+ $$s \sum_{t=1}^N \max(\Pr(walk)-0.8) g_i$$
+
+ Where $\Pr(walk)$ is determined by the walk plugin.
 
 ---
 
