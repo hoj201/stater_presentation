@@ -42,7 +42,14 @@ Our output looks like this
 
 Basically, we want a triangle to commute. (universe, labels, sensor outputs)
 
-$$ ax+b$$
+$$
+  \require{AMScd}
+  \begin{CD}
+    Universe @>sensor>> sensor readings \\
+    @VlabelVV @VstaterVV \\
+    labels @= labels
+  \end{CD}
+$$
 
 ---
 
