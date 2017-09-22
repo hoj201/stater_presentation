@@ -105,7 +105,7 @@ We have impressive hardware, but it's not magic
   (this is obtained via other plugins).
 
 - We define the sagittal angle:
-$$\theta := \arccos( g_r \cdot g_c ) \sign(g_c[2])$$
+$$\theta := \arccos( g_r \cdot g_c ) {\rm sign}( g_c \cdot e_y )$$
 
 ---
 #### window generation
