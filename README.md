@@ -1,24 +1,32 @@
----
+Go to [this link](https://gitpitch.com/hoj201/stater_presentation)
 
 ## Contents
 - what is the point of this talk?
 - what is the challenge?
+  - i2c points -> postures
+  - reality -> i2c stream is many->one
+  - we can't use too much processing (battery/cpu limits)
+  - we can't integrate acceleration to get position/velocity
 - intro to machine learning
+  - machine learning as curve fitting (or pdf fitting)
+  - the challenge
+  - overfit
 - what is stater?
+  - lift plugin
+  - kyu plugin
+  - walk plugin
+  - recal plugin
 
----
 
 ## What is the point of this talk?
 
 By the end of this talk you should:
-  - understand what decides when the device will buzz.
-  - understand what can be addressed.
-  - understand what can not be addressed.
+  - understand what decides when the device buzz.
+  - understand what areas are not taken into account in this decision.
+  - understand a few limits on what is possible.
 
-Important, because you only have one machine learning engineer at the moment.
-**Knowing these things will help you help me.**
+Important, because you only have one machine learning engineer at the moment. Knowing these things will help you help me.
 
----
 
 ## What is the challenge?
 
@@ -31,9 +39,7 @@ The input looks like this
 {"side":{"accelerometer":{"x":-0.94470215,"y":-0.14831543,"z":0.12158203},"quaternion":{"w":-0.35564506,"x":0.5939218,"y":-0.3380673,"z":-0.6375611},"gyro":{"x":0.5493164,"y":-0.79345703,"z":0.9765625},"temperature":36,"altitude":-2953,"button":0},"time":1495047945773}
 {"side":{"accelerometer":{"x":-0.8881836,"y":-0.046020508,"z":0.11413574},"quaternion":{"w":-0.35887003,"x":0.5844455,"y":-0.34159788,"z":-0.6426093},"gyro":{"x":0.79345703,"y":-1.0986328,"z":0.36621094},"temperature":36,"altitude":-2956,"button":0},"time":1495047945815}
 ```
----
-
-Our output looks like this
+The output we want looks like this
 ```json
 {"action":"lift.safe","body":{"backAngle":71.04457255759334,"end":1495048190609,"start":1495048188889,"twistAmount":17.977664314273042,"type":"none"}}
 {"action":"lift.risky","body":{"backAngle":68.45104241395217,"end":1495048202440,"start":1495048200682,"twistAmount":50.487119749529256,"type":"twist"}}
@@ -47,13 +53,66 @@ We want a triangle to commute. (universe, labels, sensor outputs)
 
 - Relevant example: Things that are not risky lifts can produce i2c streams that are identical to those of risky lifts.
 
----
-
 ### Challenge 2: Computational power is finite
-We have impressive hardware, but it's not magic
+We have impressive hardware, but it's not infinite.
 <img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg">
 
  - Too much math drains the battery and we only have 40ms to process each point.
  - Too many log messages drains the battery.
  - Impact: Neural nets can't be too deep.
  - Impact: Features must be computable.
+
+### Challenge 3: Our sensors are not perfect
+ - Impact: we must filter.
+ - Impact: we can't extract position / velocity from acceleration (draw this)
+
+## Machine learning crash course
+Example: linear regression.
+You have labelled data {(x1,y1), (x2,y2), ...}.  We'd like to find a map which takes xs->ys which is "consistent" with the data.
+
+### Cross validation
+ - split the data into a training and a testing set
+ - fit a function to the training set
+ - test your function on the test set
+
+Do this over and over until you get a function you like.
+
+## Stater
+
+### The lift plugin
+
+ - "sagittal angle".
+
+#### window generation
+ we wait for $theta$ to exceed 20 degrees.  Then we wait for it to fall back down.  That defines a window.
+
+### window processing
+ We extract a bunch of features like:
+  - max saggittal angle during window
+  - max twist during the window
+  - change in height during the window
+  - ...
+
+Then we predict if a squat occured using the height change.
+If a squat is predicted, the device will not buzz.
+
+Also, if the sagittal angle is ridic (i.e. > 75 degrees) we will not buzz.
+
+Then we estimate the back angle using the sagittal angle via a linear equation and buzz if the estimated back angle is beyond 72 degrees. With respect to sagittal angle, this means if the sagittal angle is above 36, the device will detect a risky bend, and buzz.
+
+If the back angle is between 31 and 36, then the features are used to predict a twist, and if a twist is detected the device will buzz.
+
+### Calibration
+If the device is put on correctly, then the kyu plugin does the work... math.
+
+$$ s = \sum_{i=1}^N \frac{1}{\sigma_i + \epsilon} g_i$$
+
+$$ g_cal = s / |s|$
+
+Otherwise, we use a walk detector and do similar math (i.e. compute the same equation while walking)
+
+
+### Walk plugin
+Processes on 6 second windows.  Computes the ACF function. then does a vanilla NN on top, every second.
+
+$$ acf[f] := \sum_k x[k]x[k+i]$$
