@@ -75,7 +75,7 @@ Lifting your leg behind you produces the same signal as a risky lift.
 
 ### Challenge 2: Computational power is finite
 We have impressive hardware, but it's not magic
-<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg" height="20">
+<img src="https://microship.com/wp-content/uploads/2014/03/Byte-September-1981-AI-cover.jpg" height="200">
 
  - Too much math drains the battery and we only have 40ms to process each point.
  - Too many log messages drains the battery.
