@@ -40,8 +40,13 @@ Our output looks like this
 {"action":"lift.safe","body":{"backAngle":59.843594470741394,"end":1495048203361,"start":1495048202561,"twistAmount":15.918158662410605,"type":"none"}}
 ```
 
+Basically, we want a triangle to commute. (universe, labels, sensor outputs)
+
+$$ ax+b$$
+
+---
+
 ### Challenge 1: Sensor readings are many to one
-We want a triangle to commute. (universe, labels, sensor outputs)
 
 *Example (1,2,3,4,5).  The real labels are determined by the function (x<4), the sensor just tells us if the number is even/odd.*
 
